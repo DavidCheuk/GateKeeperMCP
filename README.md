@@ -3,7 +3,7 @@
 # GateKeeperMCP
 
 > **Beta Software**
-> This project is in active development and considered **BETA**.  
+> This project is in active development and considered **ALPHA/BETA**.  
 > APIs, features, and behavior may change at any time. Use in production is not recommended.
 
 ---
@@ -115,7 +115,7 @@ Please open an issue to discuss major changes first.
 
 ## Authors
 
-- [Yu Ming Cheuk, David]
+- Yu Ming Cheuk, David
 
 ---
 
