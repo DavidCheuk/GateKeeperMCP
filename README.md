@@ -1,101 +1,74 @@
-![status: beta](https://img.shields.io/badge/status-beta-orange)
+![status: alpha](https://img.shields.io/badge/status-alpha-red)
 
 # GateKeeperMCP
 
-> **Beta Software**
-> This project is in active development and considered **ALPHA/BETA**.  
-> APIs, features, and behavior may change at any time. Use in production is not recommended.
+> **Alpha Software**
+> This project is in its early ALPHA stage and under active development.  
+> APIs, features, and security controls are subject to change.  
+> **Do not use in production. Use at your own risk.**
 
 ---
 
-GateKeeperMCP is a modular, API-first security gateway framework with policy-as-code controls and support for automated triage, designed for modern enterprise environments. It aims to standardize security guardrails for Model Context Protocol (MCP) applications, providing plugin support and OPA (Open Policy Agent) integration for policy enforcement.
+GateKeeperMCP is an experimental, plugin-based gateway and protocol handler for Model Context Protocol (MCP) systems, designed to provide enterprise-grade security, policy enforcement, and observability between AI/LLM agents, services, or automation clients.
+
+---
+
+## Architecture Overview
+
+GateKeeperMCP consists of three main components:
+
+- **Gateway**: Receives MCP requests, enforces security plugins (auth, OPA policy, RBAC, PII detection, rate limiting, etc.), and proxies to the backend.
+- **Server**: Dummy backend that executes MCP commands and returns a response.
+- **Client**: Example script that sends MCP commands to the gateway.
 
 ---
 
 ## Features
 
-- **API Gateway for MCP**: Proxy and standardize MCP server endpoints
-- **Plugin-based Architecture**: Drop-in plugin system for custom security and business logic
-- **Open Policy Agent (OPA) Integration**: Enterprise-ready policy-as-code support
-- **API Key Security**: Protects endpoints with key-based authentication
-- **Automated Triage**: Run triage scripts and serve merged decision outputs via API
-- **JSON and File APIs**: Fetch triage results and metadata
-- **Engineer-centric Filtering**: Query approval records by engineer, status, and date
-- **Status and Health Checks**: Built-in endpoints for monitoring
-- **Extensible**: Easy to add new endpoints and plugins
+- Plugin-based middleware (easy extension with new plugins)
+- Enterprise policy-as-code support via OPA (Open Policy Agent)
+- Authentication (API key, OIDC)
+- Role-Based Access Control (RBAC) and WAF hooks
+- PII and prompt safety plugins
+- Rate limiting, logging, metrics, and tracing observability
+- Registry and signature verification for MCP tools
 
 ---
 
-## Disclaimer
+## Quick Start
 
-This software is provided **as-is**, **without warranty** of any kind.  
-**Use at your own risk**.  
-Features and APIs may change at any time.
-
----
-
-## Installation
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/yourname/GateKeeperMCP.git
-cd GateKeeperMCP
-```
-
-### 2. (Recommended) Create a Python virtual environment
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-### 3. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## Usage
-
-1. **Set up your API key**  
-   Create a `~/creds.env` file with:
+1. **Clone the repository**
 
    ```bash
-   export TRIAGE_API_KEY=your_api_key_here
+   git clone https://github.com/yourname/GateKeeperMCP.git
+   cd GateKeeperMCP
    ```
 
-2. **Run the FastAPI app**  
-   (You can use `uvicorn` for local development)
+2. **(Optional) Start with Docker Compose**
 
    ```bash
-   uvicorn triage_api02:app --reload
+   docker-compose up
    ```
 
-3. **Access API docs**  
-   Visit: [http://localhost:8000/docs](http://localhost:8000/docs)
+3. **Gateway**
+   - Runs on FastAPI (`gatekeeper-gateway/main.py`)
+   - Loads plugins from `/plugins`
+   - Main endpoint: `POST /execute_mcp` (proxies to server after security checks)
+
+4. **Server**
+   - Runs on FastAPI (`gatekeeper-server/main.py`)
+   - Accepts `POST /execute` and responds with echo payload
+
+5. **Client**
+   - Example script (`gatekeeper-client/main.py`) to send MCP commands to the gateway
 
 ---
 
-## Key Endpoints
+## Security Disclaimer
 
-- `POST /triage/run`: Trigger triage run and merge outputs
-- `GET /triage/latest`: Download latest merged triage result (file)
-- `GET /triage/latest/json`: Get latest triage result as JSON
-- `GET /triage/engineer/{engineer}`: Get records for an engineer
-- `GET /triage/status`: View last triage job status
-- `GET /health`: Health check
-
-**API calls require the `x-api-key` header.**
-
----
-
-## Development Notes
-
-- **OPA policy files**: Place custom OPA policies in the appropriate plugin/policy directory (see `/plugins`).
-- **Plugins**: Drop your custom Python modules or security plugins in `/plugins`.
+- This project is in **alpha** and should **not** be used for production or sensitive environments.
+- No guarantee of completeness or security is provided.
+- Use at your own risk.
 
 ---
 
@@ -106,19 +79,12 @@ See the [LICENSE](LICENSE) file for details.
 
 ---
 
-## Contributing
-
-Pull requests and issues are welcome.  
-Please open an issue to discuss major changes first.
-
----
-
 ## Authors
 
-- Yu Ming Cheuk, David
+- Yu M Cheuk (David)
 
 ---
 
 ## Acknowledgments
 
-- Inspired by best practices in API security, modern policy-as-code frameworks, and MCP standardization efforts.
+- Inspired by enterprise policy-as-code and secure AI gateway design patterns.
