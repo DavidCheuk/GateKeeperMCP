@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+requests
+python-jose[cryptography]
+presidio-analyzer
+presidio-anonymizer
+
+# Optional dependencies for additional functionality
+#prometheus-client
+#opentelemetry-api
+#opentelemetry-sdk
+#opentelemetry-instrumentation-fastapi
+#opentelemetry-exporter-otlp
