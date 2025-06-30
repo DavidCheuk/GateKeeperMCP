@@ -14,17 +14,14 @@ services:
     depends_on:
       - gatekeeper-server
       - opa
-
   gatekeeper-server:
     build: ./gatekeeper-server
     ports:
       - "8000:8000"
-
   gatekeeper-client:
     build: ./gatekeeper-client
     depends_on:
       - gatekeeper-gateway
-
   opa:
     image: openpolicyagent/opa:latest
     command: ["run", "--server", "/app/opa/enterprise_policy.rego"]

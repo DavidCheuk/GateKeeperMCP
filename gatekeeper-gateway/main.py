@@ -33,6 +33,17 @@ async def execute_mcp(request: Request):
         json_body = json.loads(body)
     except Exception:
         raise HTTPException(400, "Invalid JSON")
+
+    # ---- PROMPT SANITIZATION CHAIN ----
+    from plugins.prompt_sanitizer_chain import run_prompt_sanitizer_chain
+    params = json_body.get("parameters", {})
+    if isinstance(params, dict) and "prompt" in params and isinstance(params["prompt"], str):
+        try:
+            params["prompt"] = run_prompt_sanitizer_chain(params["prompt"])
+            json_body["parameters"] = params
+        except Exception as e:
+            raise
+
     plugin_manager.before_request(request, json_body)
     headers = {k: v for k, v in request.headers.items() if k.lower() != "host"}
     resp = requests.post(f"{BACKEND_API}/execute", data=body, headers=headers)

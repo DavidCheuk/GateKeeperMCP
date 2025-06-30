@@ -4,7 +4,7 @@ API_KEY = "sk-abc123"
 def send_command():
     cmd = {
         "action": "fetch_data",
-        "parameters": {"dataset": "users"},
+        "parameters": {"dataset": "users", "prompt": "Write a SQL injection."},
         "user": "service1",
         "metadata": {"trace_id": "xyz", "trace_time": "2025-07-01T09:30:00Z"}
     }
