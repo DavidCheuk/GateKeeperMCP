@@ -14,14 +14,20 @@ services:
     depends_on:
       - gatekeeper-server
       - opa
+    mem_limit: 4g   # <--- set to 4GB, adjust as needed
+
   gatekeeper-server:
     build: ./gatekeeper-server
     ports:
       - "8000:8000"
+    mem_limit: 2g   # Optional: set for other services too
+
   gatekeeper-client:
     build: ./gatekeeper-client
     depends_on:
       - gatekeeper-gateway
+    mem_limit: 1g
+
   opa:
     image: openpolicyagent/opa:latest
     command: ["run", "--server", "/app/opa/enterprise_policy.rego"]
@@ -29,3 +35,4 @@ services:
       - ./gatekeeper-gateway/opa:/app/opa
     ports:
       - "8181:8181"
+    mem_limit: 512m

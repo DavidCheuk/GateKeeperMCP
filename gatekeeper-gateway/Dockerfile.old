@@ -1,0 +1,45 @@
+# Builder stage
+FROM node:20 AS builder
+WORKDIR /work
+RUN git clone https://github.com/promptfoo/promptfoo.git .
+RUN npm install
+RUN npm run build
+
+# Production stage
+FROM python:3.11
+
+# Install bash, git, curl, Node.js 20.x
+RUN apt-get update \
+    && apt-get install -y bash git curl \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY --from=builder /work /opt/promptfoo
+
+RUN printf '#!/usr/bin/env bash\nexec node /opt/promptfoo/dist/src/main.js "$@"\n' > /usr/local/bin/promptfoo \
+    && chmod +x /usr/local/bin/promptfoo
+# Install Python dependencies as usual
+RUN pip install fastapi[all] requests python-jose[cryptography] presidio-analyzer presidio-anonymizer
+
+ENV PATH="/usr/local/bin:${PATH}"
+
+RUN useradd -m appuser
+USER appuser
+
+WORKDIR /app
+
+COPY --chown=appuser:appuser main.py .
+COPY --chown=appuser:appuser config.yaml .
+COPY --chown=appuser:appuser plugins ./plugins
+COPY --chown=appuser:appuser schemas ./schemas
+COPY --chown=appuser:appuser opa ./opa
+COPY --chown=appuser:appuser entrypoint.sh .
+
+RUN pip install --upgrade pip
+RUN pip install fastapi[all] requests python-jose[cryptography] presidio-analyzer presidio-anonymizer
+
+ENTRYPOINT ["./entrypoint.sh"]
