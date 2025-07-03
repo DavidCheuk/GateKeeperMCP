@@ -1,14 +1,20 @@
 package enterprise.policy
-default allow = false
-default reason = "Not allowed"
+
+default allow := false
+default deny_reason := "Not allowed"
+
+# Use older syntax without 'if' keyword
 allow {
     input.user == "admin"
 }
+
 allow {
     input.user == "service1"
     input.action == "fetch_data"
-    startswith(input.metadata.trace_time, "2025-07-")
+    input.metadata.trace_id  # Just check if trace_id exists
+    input.parameters.dataset != "secret"
 }
-reason := "Forbidden dataset requested" {
+deny_reason := "Forbidden dataset requested" {
+    not allow
     input.parameters.dataset == "secret"
 }

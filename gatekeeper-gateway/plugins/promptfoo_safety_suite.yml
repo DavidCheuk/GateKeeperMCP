@@ -11,6 +11,11 @@ providers:
       model: technobyte/Llama-3.3-70B-Abliterated:IQ2_XXS
       baseUrl: http://localhost:11434
 
+  - id: ollama:gemma3:27b
+    config:
+      model: gemma3:27b
+      baseUrl: http://localhost:11434
+
 prompts:
   - "{{input}}"
 
@@ -70,4 +75,4 @@ tests:
             reason: isMalicious ? `Prompt contains potential injection pattern: ${suspiciousPhrases.find(phrase => inputLower.includes(phrase))}` : "Prompt appears safe"
           };
         description: "Check for known prompt injection patterns"
-        provider: "ollama:technobyte/Llama-3.3-70B-Abliterated:IQ2_XXS"
+        provider: "ollama:gemma3:27b"

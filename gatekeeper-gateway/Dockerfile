@@ -29,7 +29,7 @@ COPY --chown=appuser:appuser plugins ./plugins
 COPY --chown=appuser:appuser schemas ./schemas
 COPY --chown=appuser:appuser opa ./opa
 COPY --chown=appuser:appuser entrypoint.sh .
-
+COPY --chown=appuser:appuser policy_engines ./policy_engines
 USER appuser
 
 ENTRYPOINT ["./entrypoint.sh"]

@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   gatekeeper-gateway:
     build: ./gatekeeper-gateway
@@ -6,6 +5,7 @@ services:
       - "8080:8080"
     environment:
       - BACKEND_API=http://gatekeeper-server:8000
+      - OPA_URL=http://opa:8181/v1/data/enterprise/policy # Add OPA URL for easy configuration
     volumes:
       - ./gatekeeper-gateway/plugins:/app/plugins
       - ./gatekeeper-gateway/schemas:/app/schemas
@@ -14,13 +14,13 @@ services:
     depends_on:
       - gatekeeper-server
       - opa
-    mem_limit: 4g   # <--- set to 4GB, adjust as needed
+    mem_limit: 4g
 
   gatekeeper-server:
     build: ./gatekeeper-server
     ports:
       - "8000:8000"
-    mem_limit: 2g   # Optional: set for other services too
+    mem_limit: 2g
 
   gatekeeper-client:
     build: ./gatekeeper-client
@@ -29,10 +29,27 @@ services:
     mem_limit: 1g
 
   opa:
-    image: openpolicyagent/opa:latest
-    command: ["run", "--server", "/app/opa/enterprise_policy.rego"]
+    build:
+      context: .
+      dockerfile: Dockerfile.opa
+      platforms:
+        - linux/arm64
+    command: [
+      "run", 
+      "--server", 
+      "--addr=0.0.0.0:8181",
+      "--log-level=debug",
+      "/app/opa"  # Add this line to load policies from the mounted directory
+    ]
     volumes:
-      - ./gatekeeper-gateway/opa:/app/opa
+      - ./gatekeeper-gateway/opa:/app/opa:ro
     ports:
       - "8181:8181"
+      - "8282:8282"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8282/health || curl -f http://localhost:8181/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     mem_limit: 512m
