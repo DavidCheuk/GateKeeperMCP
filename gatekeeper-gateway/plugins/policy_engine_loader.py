@@ -16,7 +16,7 @@ opa_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(opa_module)
 OPAPlugin = opa_module.OPAPlugin
 
-# This loader can be extended to support multiple backends in future
+# This loader can be extended to support multiple backends in the future
 def load_policy_engine():
     opa_url = os.getenv("OPA_URL", "http://opa:8181/v1/data/enterprise/policy")
     return OPAPlugin(opa_url)
